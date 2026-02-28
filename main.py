@@ -10,7 +10,10 @@ from routers import (
     employee,
     machine,
     production_log,
-    kpis
+    kpis,
+    llm,
+    dispatching
+
     # tache,          # pas encore converti
     # shift,          # pas encore converti
     # rfid_tag,       # pas encore converti
@@ -26,7 +29,8 @@ app.include_router(kpis.router)
 app.include_router(employee.router)
 app.include_router(machine.router)
 app.include_router(production_log.router)
-
+app.include_router(llm.router)
+app.include_router(dispatching.router)
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],

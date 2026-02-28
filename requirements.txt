@@ -1,0 +1,13 @@
+fastapi
+uvicorn
+sqlmodel
+python-dotenv
+pydantic-settings
+mysql-connector-python
+modelcontextprotocol
+httpx
+mcp
+anthropic
+numpy
+pandas
+scipy
