@@ -8,7 +8,7 @@ from routers import alert
 
 # database/session.py — ajouter dans init_db()
 
-from routers import employee, machine, production_log, kpis, monthly_summary, shift_summary,anomaly
+from routers import employee, machine, production_log, kpis, monthly_summary, shift_summary,anomaly,dispatching,llm
 from scheduler.monthly_job import generate_monthly_summary
 from scheduler.shift_job import generate_shift_summary
 
@@ -63,7 +63,8 @@ app.include_router(monthly_summary.router)
 app.include_router(shift_summary.router)
 app.include_router(alert.router)
 app.include_router(anomaly.router)
-
+app.include_router(dispatching.router)
+app.include_router(llm.router)
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],

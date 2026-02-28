@@ -11,3 +11,7 @@ anthropic
 numpy
 pandas
 scipy
+pymysql
+apscheduler
+joblib
+scikit-learn
