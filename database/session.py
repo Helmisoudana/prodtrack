@@ -15,6 +15,9 @@ def init_db():
     from models.employee import employee
     from models.machine import Machine
     from models.production_log import FactoryLog
+    from models.monthly_summary import MonthlySummary 
+    from models.shift_summary import ShiftSummary
+    from models.alert import Alert
     # ajoute les autres models ici au fur et à mesure
 
     SQLModel.metadata.create_all(engine)
