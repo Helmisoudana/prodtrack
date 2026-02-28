@@ -16,7 +16,21 @@ def get_all(
     session: Session = Depends(get_session)
 ):
     try:
-        query = select(ShiftSummary).order_by(ShiftSummary.date.desc())
+        query = select(ShiftSummary).order_by(ShiftSummary.date.desc()).limit(3)
+        if shift:
+            query = query.where(ShiftSummary.shift == shift)
+        summaries = session.exec(query).all()
+        return {"status": 200, "data": summaries}
+    except Exception as e:
+        return {"status": 400, "data": [], "error": str(e)}
+
+@router.get("/last10days")
+def get_all_10_days(
+    shift: Optional[str] = Query(None),  # filtrer par Matin/Jour/Nuit
+    session: Session = Depends(get_session)
+):
+    try:
+        query = select(ShiftSummary).order_by(ShiftSummary.date.desc()).limit(30)
         if shift:
             query = query.where(ShiftSummary.shift == shift)
         summaries = session.exec(query).all()

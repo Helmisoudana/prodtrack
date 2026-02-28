@@ -12,7 +12,7 @@ router = APIRouter(prefix="/monthly-summaries", tags=["Monthly Summaries"])
 @router.get("")
 def get_all_summaries(session: Session = Depends(get_session)):
     try:
-        summaries = session.exec(select(MonthlySummary).order_by(MonthlySummary.periode.desc())).all()
+        summaries = session.exec(select(MonthlySummary).order_by(MonthlySummary.periode.desc()).limit(4)).all()
         return {"status": 200, "data": summaries}
     except Exception as e:
         return {"status": 400, "data": [], "error": str(e)}
