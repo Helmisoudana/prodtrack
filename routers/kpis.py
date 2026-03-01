@@ -134,7 +134,85 @@ def get_rendement_par_employe(
     except Exception as e:
         return {"status": 400, "data": [], "error": str(e)}
 
+# GET /kpis/rendement-employe/{employee_id}
+@router.get("/rendement-employe/{employee_id}")
+def get_rendement_employe_by_id(
+    employee_id: str,
+    session: Session = Depends(get_session)
+):
+    try:
+        # Vérifier si employé existe
+        emp = session.exec(
+            select(employee).where(employee.employee_id == employee_id)
+        ).first()
 
+        if not emp:
+            return {"status": 404, "error": "Employé non trouvé"}
+
+        # Récupérer machines
+        machines = session.exec(select(Machine)).all()
+        machine_map = {m.machine_id: parse_float(m.temps_par_unite_min) for m in machines}
+
+        # Logs de l'employé
+        logs = session.exec(
+            select(FactoryLog).where(FactoryLog.employee_id == employee_id)
+        ).all()
+
+        total = len(logs)
+        if total == 0:
+            return {
+                "status": 200,
+                "data": {
+                    "employee_id": employee_id,
+                    "message": "Aucune tâche trouvée pour cet employé"
+                }
+            }
+
+        completed = [l for l in logs if l.task_status == COMPLETED]
+        interrupted = [l for l in logs if l.task_status == INTERRUPTED]
+        anomalies = [l for l in logs if l.anomaly_flag == 1]
+
+        # Calcul rendement
+        rendements = []
+        for log in completed:
+            temps_reel = parse_float(log.task_duration_min)
+            temps_theorique = machine_map.get(log.machine_id, 0)
+
+            if temps_theorique > 0 and temps_reel > 0:
+                r = (temps_theorique / temps_reel) * 100
+                rendements.append(min(r, 100))
+
+        rendement = sum(rendements) / len(rendements) if rendements else 0
+
+        durations = [parse_float(l.task_duration_min) for l in completed if l.task_duration_min]
+        avg_duration = sum(durations) / len(durations) if durations else 0
+
+        taux_anomalie = (len(anomalies) / total * 100) if total else 0
+
+        return {
+            "status": 200,
+            "data": {
+                "employee_id": emp.employee_id,
+                "nom": emp.nom,
+                "prenom": emp.prenom,
+                "poste": emp.poste,
+                "departement": emp.departement,
+                "shift_travail": emp.shift_travail,
+                "statut_presence": emp.statut_presence,
+                "performance_moyenne_db": parse_float(emp.performance_moyenne),
+                "taux_rendement_db": parse_float(emp.taux_rendement),
+                "total_taches": total,
+                "taches_completees": len(completed),
+                "taches_interrompues": len(interrupted),
+                "total_anomalies": len(anomalies),
+                "taux_anomalie_pct": round(taux_anomalie, 2),
+                "rendement_calcule_pct": round(rendement, 2),
+                "duree_moyenne_min": round(avg_duration, 2),
+            }
+        }
+
+    except Exception as e:
+        return {"status": 400, "error": str(e)}
 # GET /kpis/duree-moyenne-taches
 @router.get("/duree-moyenne-taches")
 def get_duree_moyenne_taches(session: Session = Depends(get_session)):
