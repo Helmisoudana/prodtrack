@@ -8,6 +8,7 @@ modelcontextprotocol
 httpx
 mcp
 anthropic
+boto3
 numpy
 pandas
 scipy
@@ -15,3 +16,6 @@ pymysql
 apscheduler
 joblib
 scikit-learn
+fpdf2
+markdown
+matplotlib
