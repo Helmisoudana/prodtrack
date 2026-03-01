@@ -65,7 +65,6 @@ app.include_router(alert.router)
 app.include_router(anomaly.router)
 app.include_router(dispatching.router)
 app.include_router(llm.router)
-
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
